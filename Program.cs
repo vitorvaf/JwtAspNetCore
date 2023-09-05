@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using System.Text;
 using JwtAspNet;
+using JwtAspNet.Extensios;
 using JwtAspNet.Model;
 using JwtAspNet.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -49,6 +51,17 @@ app.MapGet("/login", (TokenService service) =>
 
     return service.Create(user);
 });
-app.MapGet("/restrito", (TokenService service) => "Acesso validado com token").RequireAuthorization("development");
+app.MapGet("/restrito", (TokenService service, ClaimsPrincipal user) =>
+{
+    return new 
+    {
+        Id = user.GetId(),
+        Login = user.GetLogin(),
+        Name = user.GetName(),
+        Email = user.GetEmail(),
+        Image = user.GetImage()
+    };
+
+}).RequireAuthorization("admin");
 
 app.Run();
